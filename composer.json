@@ -1,0 +1,13 @@
+{
+    "name": "faisal/php-mailer",
+    "description": "PHP Based Application to send mail",
+    "type": "project",
+    "license": "MIT License",
+    "authors": [
+        {
+            "name": "Faisal Rizky",
+            "email": "isalriz9@gmail.com"
+        }
+    ],
+    "require": {}
+}
