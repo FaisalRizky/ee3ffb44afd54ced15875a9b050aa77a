@@ -2,9 +2,10 @@
 
 namespace Middleware;
 
+use Providers\BaseMiddlewareProvider;
 use Providers\OAuthProvider;
 
-class OAuthMiddleware
+class OAuthMiddleware extends BaseMiddlewareProvider
 {
     private $oauthProvider;
 
@@ -23,9 +24,7 @@ class OAuthMiddleware
             // e.g., $_SESSION['user'] = $resourceOwner;
 
         } catch (\Exception $e) {
-            header('HTTP/1.1 401 Unauthorized');
-            echo 'Unauthorized: ' . $e->getMessage();
-            exit();
+            $this->sendUnauthorizedResponse('Unauthorized: ' . $e->getMessage());
         }
     }
 }

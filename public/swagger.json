@@ -1,0 +1,114 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "PHP Mailer",
+    "description": "This API is to send mail",
+    "contact": {
+      "email": "isalriz9@gmail.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "",
+      "description": "SwaggerHub API Auto Mocking"
+    },
+    {
+      "url": "http://localhost:5000",
+      "description": "Local"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "OAuth2": {
+        "type": "oauth2",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "http://localhost:5000/oauth/authorize",
+            "tokenUrl": "http://localhost:5000/oauth/token",
+            "scopes": {
+              "read": "Grants read access",
+              "write": "Grants write access"
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/emails/send": {
+      "post": {
+        "tags": [
+          "Mail Module"
+        ],
+        "summary": "Send Mail",
+        "description": "Sends an email using the provided payload.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "module": {
+                    "type": "string",
+                    "example": "notification"
+                  },
+                  "emailId": {
+                    "type": "string",
+                    "example": "example@example.com"
+                  },
+                  "sender": {
+                    "type": "string",
+                    "example": "sender@example.com"
+                  },
+                  "recepient": {
+                    "type": "string",
+                    "example": "recepient@example.com"
+                  },
+                  "subject": {
+                    "type": "string",
+                    "example": "Test Email"
+                  },
+                  "content": {
+                    "type": "string",
+                    "example": "This is a test email."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mail sent successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Email sent successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    }
+  }
+}

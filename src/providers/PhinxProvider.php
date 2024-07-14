@@ -21,7 +21,7 @@ class PhinxProvider
         $env = $config->getConfig();
 
         // Determine the migration folder path
-        $migrationPath = dirname(__FILE__, 2).'/database/migrations';
+        $migrationPath = dirname(__FILE__, 3).'/database/migrations';
         
         // Output the migration folder path
         echo "Phinx migration folder path: " . $migrationPath . PHP_EOL;

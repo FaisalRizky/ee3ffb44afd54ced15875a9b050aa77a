@@ -6,14 +6,38 @@ use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Exception\AMQPException;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use Config\Config; // Import the Config class
 
 class QueueProvider
 {
+    private static $instance = null;
     private static $logger;
     private static $connection;
 
-    public static function initialize(array $config)
+    // Private constructor to prevent instantiation
+    private function __construct() {}
+
+    // Private clone method to prevent cloning
+    private function __clone() {}
+
+    // Private wakeup method to prevent deserialization
+    public function __wakeup() {}
+
+    // Method to get the singleton instance
+    public static function getInstance()
     {
+        if (self::$instance === null) {
+            self::$instance = new self();
+            self::initialize();
+        }
+        return self::$instance;
+    }
+
+    public static function initialize()
+    {
+        // Get configuration from Config class
+        $config = (new Config())->getConfig();
+
         // Initialize logger
         self::initializeLogger();
 

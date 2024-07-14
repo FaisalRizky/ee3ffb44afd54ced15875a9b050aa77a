@@ -18,5 +18,14 @@ WORKDIR /var/www/html
 # Copy the PHP application files to the working directory
 COPY . /var/www/html/
 
+# # Copy the start script into the container
+# COPY start.sh /usr/local/bin/start.sh
+
+# # Give execution permission to the start script
+# RUN chmod +x /usr/local/bin/start.sh
+
 # Expose port 8000
 EXPOSE 8000
+
+# # Command to run the start script
+# CMD ["bash", "/usr/local/bin/start.sh"]

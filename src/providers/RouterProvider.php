@@ -3,9 +3,9 @@
 namespace Providers;
 
 use AltoRouter;
-use Middleware\OAuthMiddleware;
+use Illuminate\Http\Request; // Ensure this import
 
-class RouterProvider
+class RouterProvider extends BaseControllerProvider
 {
     private $router;
 
@@ -39,15 +39,17 @@ class RouterProvider
                         ]
                     );
                 }
+            } else {
+                $this->send(null, 500, 'Invalid route group provider');
             }
         }
     }
 
     public function handleRequest()
     {
-        $requestUri = $_SERVER['REQUEST_URI'];
+        $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $requestMethod = $_SERVER['REQUEST_METHOD'];
-        
+
         // Match the current request
         $match = $this->router->match($requestUri, $requestMethod);
 
@@ -58,11 +60,10 @@ class RouterProvider
 
             // Execute middlewares
             foreach ($middlewares as $middleware) {
-                if ($middleware instanceof OAuthMiddleware) {
+                if (is_object($middleware) && method_exists($middleware, 'handle')) {
                     $middleware->handle();
                 } else {
-                    echo 'Middleware is not an instance of OAuthMiddleware';
-                    exit();
+                    $this->send(null, 500, 'Middleware is not callable or does not have a handle method');
                 }
             }
 
@@ -73,15 +74,44 @@ class RouterProvider
             if (class_exists($controllerName)) {
                 $controller = new $controllerName();
                 if (is_callable([$controller, $action])) {
-                    call_user_func([$controller, $action]);
+                    // Resolve dependencies and call the action
+                    $reflection = new \ReflectionMethod($controller, $action);
+                    $params = [];
+
+                    foreach ($reflection->getParameters() as $param) {
+                        $type = $param->getType();
+                        if ($type && !$type->isBuiltin()) {
+                            $className = $type->getName();
+                            $params[] = $this->resolveClass($className);
+                        } else {
+                            $params[] = null; // Handle non-class parameters if necessary
+                        }
+                    }
+
+                    call_user_func_array([$controller, $action], $params);
                 } else {
-                    echo 'Action method is not callable: ' . $action;
+                    $this->send(null, 500, 'Action method is not callable: ' . $action);
                 }
             } else {
-                echo 'Controller class does not exist: ' . $controllerName;
+                $this->send(null, 500, 'Controller class does not exist: ' . $controllerName);
             }
         } else {
-            echo '404 Not Found';
+            $this->send(null, 404, '404 Not Found');
         }
+    }
+
+    private function resolveClass($className)
+    {
+        // Simple dependency resolution (can be extended for more complex scenarios)
+        if ($className === 'Illuminate\Http\Request') {
+            return $this->createRequest();
+        }
+        return new $className();
+    }
+
+    private function createRequest()
+    {
+        // Create and return a Request object
+        return Request::createFromGlobals();
     }
 }
