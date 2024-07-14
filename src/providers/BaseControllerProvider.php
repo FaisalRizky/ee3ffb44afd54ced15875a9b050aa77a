@@ -11,7 +11,7 @@ class BaseControllerProvider
         echo json_encode([
             'status' => $statusCode,
             'message' => $message,
-            'data' => $data
+            'data' => $data ?? []
         ]);
         exit();
     }

@@ -32,7 +32,8 @@
             "Controllers\\": "src/controllers/",
             "Middleware\\": "src/middleware/",
             "Services\\": "src/services/",
-            "Requests\\": "src/requests/"
+            "Requests\\": "src/requests/",
+            "Models\\": "src/models/"
         }
     },
     "scripts": {

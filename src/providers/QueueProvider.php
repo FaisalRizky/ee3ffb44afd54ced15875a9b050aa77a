@@ -68,7 +68,7 @@ class QueueProvider
     {
         if (self::$logger === null) {
             // Create a log channel
-            $logPath = dirname(__FILE__, 2) . '/logs/app.log';
+            $logPath = dirname(__FILE__, 3) . '/logs/app.log';
 
             // Ensure the logs directory exists
             if (!is_dir(dirname($logPath))) {

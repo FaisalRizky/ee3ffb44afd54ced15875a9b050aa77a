@@ -32,8 +32,8 @@ class EmailRequest
         }
 
         // Validate 'recepient'
-        if (empty($this->data['recepient']) || !is_string($this->data['recepient'])) {
-            $this->errors['recepient'] = 'Recipient is required and must be a string.';
+        if (empty($this->data['recipient']) || !is_string($this->data['recipient'])) {
+            $this->errors['recipient'] = 'Recipient is required and must be a string.';
         }
 
         // Validate 'subject'

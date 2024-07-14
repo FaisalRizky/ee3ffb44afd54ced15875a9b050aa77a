@@ -14,7 +14,7 @@ class CreateEmailsTable extends AbstractMigration
             $table = $this->table('emails');
             $table->addColumn('module', 'string', ['limit' => 100])
                   ->addColumn('emailId', 'string', ['limit' => 100])
-                  ->addColumn('sender', 'string', ['limit' => 100])
+                  ->addColumn('recipient', 'string', ['limit' => 100])
                   ->addColumn('subject', 'string', ['limit' => 100])
                   ->addColumn('content', 'text')
                   ->addColumn('status', 'string', ['limit' => 20, 'default' => 'processing'])

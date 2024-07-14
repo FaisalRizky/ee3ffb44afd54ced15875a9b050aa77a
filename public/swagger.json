@@ -66,9 +66,9 @@
                     "type": "string",
                     "example": "sender@example.com"
                   },
-                  "recepient": {
+                  "recipient": {
                     "type": "string",
-                    "example": "recepient@example.com"
+                    "example": "recipient@example.com"
                   },
                   "subject": {
                     "type": "string",

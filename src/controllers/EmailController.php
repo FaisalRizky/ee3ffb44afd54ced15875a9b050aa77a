@@ -5,11 +5,10 @@ namespace Controllers;
 use Requests\EmailRequest;
 use Providers\QueueProvider;
 use Services\EmailService;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Providers\BaseControllerProvider;
+use Illuminate\Http\Request; // Ensure this import
 
 class EmailController extends BaseControllerProvider
 {
@@ -28,19 +27,33 @@ class EmailController extends BaseControllerProvider
         $emailRequest = new EmailRequest($request->all());
 
         if (!$emailRequest->validate()) {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Validation failed',
-                'errors' => $emailRequest->getErrors()
-            ], 400);
+            // Using the send method from BaseControllerProvider
+            $this->send(
+                null,
+                400,
+                'Validation failed',
+                ['errors' => $emailRequest->getErrors()]
+            );
         }
 
         try {
             $this->emailService->sendEmail($emailRequest->getData());
-            echo json_encode(['status' => 'success', 'message' => 'Email sent successfully'], 200);
+            // Using the send method from BaseControllerProvider
+            $this->send(
+                [
+                    'email_id' =>  $this->emailService->getEmailId()
+                ],
+                200,
+                'Email sent successfully',
+            );
         } catch (\Exception $e) {
             $this->logger->error('Failed to send email', ['exception' => $e->getMessage()]);
-            echo json_encode(['status' => 'error', 'message' => 'Failed to send email'], 500);
+            // Using the send method from BaseControllerProvider
+            $this->send(
+                null,
+                500,
+                'Failed to send email'
+            );
         }
     }
 

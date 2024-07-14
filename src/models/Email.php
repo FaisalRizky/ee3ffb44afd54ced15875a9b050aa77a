@@ -1,12 +1,12 @@
 <?php
 
-namespace Src\Models;
+namespace Models;
 
 use Illuminate\Database\Eloquent\Model;
 
 class Email extends Model
 {
     protected $fillable = [
-        'module', 'emailId', 'sender', 'recepient', 'subject', 'content', 'status', 'sent_at', 'remarks'
+        'module', 'emailId', 'recipient', 'subject', 'content', 'status', 'sent_at', 'remarks'
     ];
 }

@@ -7,11 +7,13 @@ use Providers\QueueProvider;
 use PhpAmqpLib\Message\AMQPMessage;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use Ramsey\Uuid\Uuid;
 
 class EmailService
 {
     private $queueProvider;
     private $logger;
+    private $emailId; // Property to store the UUID
 
     public function __construct(QueueProvider $queueProvider)
     {
@@ -19,8 +21,16 @@ class EmailService
         $this->logger = $this->initializeLogger();
     }
 
-    public function sendEmail(array $emailData)
+    public function sendEmail(array $emailData): array
     {
+        // Generate unique email_id
+        $this->emailId = Uuid::uuid4()->toString();
+        $emailData['email_id'] = $this->emailId;
+
+        // Save email to database
+        $this->saveEmailToDatabase($emailData);
+
+        // Publish email to RabbitMQ
         $connection = $this->queueProvider->getConnection();
         $channel = $connection->channel();
         $channel->queue_declare('email_queue', false, false, false, false);
@@ -32,6 +42,13 @@ class EmailService
             ]);
             $channel->basic_publish($message, '', 'email_queue');
             $this->logger->info('Email sent to RabbitMQ', $emailData);
+
+            // Return the UUID as part of the response
+            return [
+                'status' => 'success',
+                'message' => 'Email sent successfully',
+                'email_id' => $this->emailId
+            ];
         } catch (\Exception $e) {
             $this->logger->error('Failed to send email to RabbitMQ: ' . $e->getMessage(), $emailData);
             throw $e; // Re-throw the exception for further handling if necessary
@@ -41,9 +58,28 @@ class EmailService
         }
     }
 
+    private function saveEmailToDatabase(array $emailData)
+    {
+        try {
+            // Create a new Email record
+            Email::create([
+                'module' => $emailData['module'],
+                'emailId' => $emailData['email_id'],
+                'sender' => $emailData['sender'],
+                'recipient' => $emailData['recipient'],
+                'subject' => $emailData['subject'],
+                'content' => $emailData['content']
+            ]);
+            $this->logger->info('Email saved to database', $emailData);
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to save email to database: ' . $e->getMessage(), $emailData);
+            throw $e; // Re-throw the exception for further handling if necessary
+        }
+    }
+
     private function initializeLogger()
     {
-        $logPath = dirname(__FILE__, 2) . '/logs/app.log';
+        $logPath = dirname(__FILE__, 3) . '/logs/app.log';
 
         if (!is_dir(dirname($logPath))) {
             mkdir(dirname($logPath), 0777, true);
@@ -53,5 +89,11 @@ class EmailService
         $logger->pushHandler(new StreamHandler($logPath, Logger::DEBUG));
 
         return $logger;
+    }
+
+    // Getter for emailId
+    public function getEmailId(): ?string
+    {
+        return $this->emailId;
     }
 }

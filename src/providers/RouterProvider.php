@@ -3,7 +3,7 @@
 namespace Providers;
 
 use AltoRouter;
-use Illuminate\Http\Request; // Ensure this import
+use Illuminate\Http\Request;
 
 class RouterProvider extends BaseControllerProvider
 {
@@ -106,7 +106,13 @@ class RouterProvider extends BaseControllerProvider
         if ($className === 'Illuminate\Http\Request') {
             return $this->createRequest();
         }
-        return new $className();
+
+        // Handle other classes
+        if (class_exists($className)) {
+            return new $className();
+        }
+
+        throw new \Exception('Class ' . $className . ' not found');
     }
 
     private function createRequest()
