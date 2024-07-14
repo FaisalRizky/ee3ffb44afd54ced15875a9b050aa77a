@@ -1,6 +1,6 @@
 <?php
 
-namespace Src\Middleware;
+namespace Middleware;
 
 use Providers\OAuthProvider;
 

@@ -6,7 +6,7 @@ class RouteGroupProvider
 {
     private $routes = [];
 
-    public function addRoute(string $method, string $path, array $handler, array $middlewares = [])
+    public function addRoute($method, $path, $handler, $middlewares = [])
     {
         $this->routes[] = [
             'method' => $method,

@@ -3,16 +3,14 @@
 namespace Providers;
 
 use AltoRouter;
-use Providers\OAuthProvider;
+use Middleware\OAuthMiddleware;
 
 class RouterProvider
 {
     private $router;
-    private $oauthProvider;
 
-    public function __construct(array $config, OAuthProvider $oauthProvider)
+    public function __construct(array $config)
     {
-        $this->oauthProvider = $oauthProvider;
         $this->router = new AltoRouter();
         $this->initializeRoutes();
     }
@@ -55,37 +53,32 @@ class RouterProvider
 
         if ($match) {
             $target = $match['target'];
-            $handler = $target['handler'];
+            $controllerAction = $target['handler'];
             $middlewares = $target['middlewares'];
 
             // Execute middlewares
             foreach ($middlewares as $middleware) {
-                if (is_callable($middleware)) {
-                    call_user_func($middleware);
+                if ($middleware instanceof OAuthMiddleware) {
+                    $middleware->handle();
                 } else {
-                    echo 'Middleware is not callable: ' . print_r($middleware, true);
+                    echo 'Middleware is not an instance of OAuthMiddleware';
                     exit();
                 }
             }
 
             // Call the controller action
-            $controllerAction = $handler;
-            if (is_array($controllerAction) && count($controllerAction) === 2) {
-                $controllerName = $controllerAction[0];
-                $action = $controllerAction[1];
+            $controllerName = $controllerAction[0];
+            $action = $controllerAction[1];
 
-                if (class_exists($controllerName)) {
-                    $controller = new $controllerName();
-                    if (is_callable([$controller, $action])) {
-                        call_user_func([$controller, $action]);
-                    } else {
-                        echo 'Action method is not callable: ' . $action;
-                    }
+            if (class_exists($controllerName)) {
+                $controller = new $controllerName();
+                if (is_callable([$controller, $action])) {
+                    call_user_func([$controller, $action]);
                 } else {
-                    echo 'Controller class does not exist: ' . $controllerName;
+                    echo 'Action method is not callable: ' . $action;
                 }
             } else {
-                echo 'Invalid controller action format: ' . print_r($handler, true);
+                echo 'Controller class does not exist: ' . $controllerName;
             }
         } else {
             echo '404 Not Found';
