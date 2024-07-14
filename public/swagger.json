@@ -58,10 +58,6 @@
                     "type": "string",
                     "example": "notification"
                   },
-                  "emailId": {
-                    "type": "string",
-                    "example": "example@example.com"
-                  },
                   "sender": {
                     "type": "string",
                     "example": "sender@example.com"

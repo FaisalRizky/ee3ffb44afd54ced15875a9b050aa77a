@@ -25,7 +25,7 @@ class EmailService
     {
         // Generate unique email_id
         $this->emailId = Uuid::uuid4()->toString();
-        $emailData['email_id'] = $this->emailId;
+        $emailData['emailId'] = $this->emailId;
 
         // Save email to database
         $this->saveEmailToDatabase($emailData);
@@ -47,7 +47,7 @@ class EmailService
             return [
                 'status' => 'success',
                 'message' => 'Email sent successfully',
-                'email_id' => $this->emailId
+                'emailId' => $this->emailId
             ];
         } catch (\Exception $e) {
             $this->logger->error('Failed to send email to RabbitMQ: ' . $e->getMessage(), $emailData);
@@ -64,7 +64,7 @@ class EmailService
             // Create a new Email record
             Email::create([
                 'module' => $emailData['module'],
-                'emailId' => $emailData['email_id'],
+                'emailId' => $emailData['emailId'],
                 'sender' => $emailData['sender'],
                 'recipient' => $emailData['recipient'],
                 'subject' => $emailData['subject'],

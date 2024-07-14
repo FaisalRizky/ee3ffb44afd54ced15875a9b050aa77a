@@ -21,11 +21,6 @@ class EmailRequest
             $this->errors['module'] = 'Module is required and must be a string.';
         }
 
-        // Validate 'emailId'
-        if (empty($this->data['emailId']) || !is_string($this->data['emailId'])) {
-            $this->errors['emailId'] = 'Email ID is required and must be a string.';
-        }
-
         // Validate 'sender'
         if (empty($this->data['sender']) || !is_string($this->data['sender'])) {
             $this->errors['sender'] = 'Sender is required and must be a string.';

@@ -22,7 +22,8 @@
         "illuminate/http": "^9.52",
         "illuminate/container": "^9.52",
         "illuminate/support": "^9.52",
-        "ramsey/uuid": "^4.7"
+        "ramsey/uuid": "^4.7",
+        "phpmailer/phpmailer": "^6.9"
     },
     "autoload": {
         "psr-4": {
