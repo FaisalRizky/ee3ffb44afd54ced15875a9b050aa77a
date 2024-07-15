@@ -36,10 +36,12 @@ class EmailService
         $channel->queue_declare('email_queue', false, false, false, false);
 
         try {
-            $message = new AMQPMessage(json_encode($emailData), [
+            $message = new AMQPMessage(
+                json_encode($emailData), [
                 'content_type' => 'application/json',
                 'delivery_mode' => 2
-            ]);
+                ]
+            );
             $channel->basic_publish($message, '', 'email_queue');
             $this->logger->info('Email sent to RabbitMQ', $emailData);
 
@@ -62,14 +64,16 @@ class EmailService
     {
         try {
             // Create a new Email record
-            Email::create([
+            Email::create(
+                [
                 'module' => $emailData['module'],
                 'emailId' => $emailData['emailId'],
                 'sender' => $emailData['sender'],
                 'recipient' => $emailData['recipient'],
                 'subject' => $emailData['subject'],
                 'content' => $emailData['content']
-            ]);
+                ]
+            );
             $this->logger->info('Email saved to database', $emailData);
         } catch (\Exception $e) {
             $this->logger->error('Failed to save email to database: ' . $e->getMessage(), $emailData);

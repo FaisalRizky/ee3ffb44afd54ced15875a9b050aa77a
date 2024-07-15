@@ -15,13 +15,19 @@ class QueueProvider
     private static $connection;
 
     // Private constructor to prevent instantiation
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 
     // Private clone method to prevent cloning
-    private function __clone() {}
+    private function __clone()
+    {
+    }
 
     // Private wakeup method to prevent deserialization
-    public function __wakeup() {}
+    public function __wakeup()
+    {
+    }
 
     // Method to get the singleton instance
     public static function getInstance()

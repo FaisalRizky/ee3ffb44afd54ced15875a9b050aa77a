@@ -8,11 +8,13 @@ class BaseControllerProvider
     {
         http_response_code($statusCode);
         header('Content-Type: application/json');
-        echo json_encode([
+        echo json_encode(
+            [
             'status' => $statusCode,
             'message' => $message,
             'data' => $data ?? []
-        ]);
+            ]
+        );
         exit();
     }
     

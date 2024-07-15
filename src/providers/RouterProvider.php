@@ -26,7 +26,7 @@ class RouterProvider extends BaseControllerProvider
         $files = glob($routesDir . '/*.php');
         
         foreach ($files as $file) {
-            $routeGroup = require $file;
+            $routeGroup = include $file;
 
             if ($routeGroup instanceof RouteGroupProvider) {
                 foreach ($routeGroup->getRoutes() as $route) {

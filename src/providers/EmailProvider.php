@@ -27,7 +27,7 @@ class EmailProvider
     /**
      * Send an email.
      *
-     * @param array $emailData
+     * @param  array $emailData
      * @throws \Exception
      */
     public static function sendEmail(array $emailData)

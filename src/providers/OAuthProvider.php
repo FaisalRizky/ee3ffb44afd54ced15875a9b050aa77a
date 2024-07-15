@@ -15,14 +15,16 @@ class OAuthProvider
         $this->config = $config;
 
         // Initialize OAuth2 Provider
-        $this->provider = new GenericProvider([
+        $this->provider = new GenericProvider(
+            [
             'clientId'                => $config['OAUTH_CLIENT_ID'],
             'clientSecret'            => $config['OAUTH_CLIENT_SECRET'],
             'redirectUri'             => $config['OAUTH_REDIRECT_URI'],
             'urlAuthorize'            => $config['OAUTH_AUTHORIZE_URL'],
             'urlAccessToken'          => $config['OAUTH_ACCESS_TOKEN_URL'],
             'urlResourceOwnerDetails' => $config['OAUTH_RESOURCE_OWNER_DETAILS_URL'],
-        ]);
+            ]
+        );
     }
 
     // Get authorization URL
@@ -34,9 +36,11 @@ class OAuthProvider
     // Get access token using authorization code
     public function getAccessToken($authorizationCode)
     {
-        return $this->provider->getAccessToken('authorization_code', [
+        return $this->provider->getAccessToken(
+            'authorization_code', [
             'code' => $authorizationCode
-        ]);
+            ]
+        );
     }
 
     // Get resource owner details

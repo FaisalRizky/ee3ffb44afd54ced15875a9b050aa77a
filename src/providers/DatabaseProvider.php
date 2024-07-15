@@ -20,7 +20,8 @@ class DatabaseProvider
             $capsule = new Capsule;
 
             // Add database connection
-            $capsule->addConnection([
+            $capsule->addConnection(
+                [
                 'driver'    => $config['DB_CONNECTION'],
                 'host'      => $config['DB_HOST'],
                 'database'  => $config['DB_DATABASE'],
@@ -29,7 +30,8 @@ class DatabaseProvider
                 'charset'   => 'utf8',
                 'prefix'    => '',
                 'schema'    => 'public',
-            ]);
+                ]
+            );
 
             // Set the Capsule instance as globally accessible
             $capsule->setAsGlobal();
