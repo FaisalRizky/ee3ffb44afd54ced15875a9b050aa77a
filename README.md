@@ -6,6 +6,10 @@ PHP Based Application to send mail.
 
 This project is a PHP-based application designed to send mail using various PHP libraries and tools. It leverages the power of PHP 8.2 and several popular libraries to provide a robust and efficient mailing solution.
 
+## Flowchart and ERD
+![ERD drawio](https://github.com/user-attachments/assets/69f28386-7fba-48c3-8415-6240876b9e0a)
+![Flowchart_ drawio](https://github.com/user-attachments/assets/90618683-ace9-494b-81b4-0465ff3a8859)
+
 ## Features
 
 - Environment configuration using `vlucas/phpdotenv`
@@ -87,6 +91,16 @@ The following scripts are available for managing and running the application:
   Start the message consumer:
   ```sh
   composer start:consumer
+
+## To Do
+
+- [ ] Run classes as instances
+- [ ] Add unit tests for all major components
+- [ ] Improve error handling and logging
+- [ ] Optimize Docker setup for production
+- [ ] Implement rate limiting for email sending
+- [ ] Add support for multiple email providers
+- [ ] Enhance security with proper input validation and sanitization
 
 ## License
 
