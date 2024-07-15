@@ -2,10 +2,10 @@
 
 namespace Middleware;
 
-use Providers\BaseMiddlewareProvider;
 use Providers\OAuthProvider;
+use Illuminate\Http\Request;
 
-class OAuthMiddleware extends BaseMiddlewareProvider
+class OAuthMiddleware
 {
     private $oauthProvider;
 
@@ -16,15 +16,44 @@ class OAuthMiddleware extends BaseMiddlewareProvider
 
     public function handle()
     {
-        try {
-            $accessToken = $this->oauthProvider->getAccessTokenFromRequest();
-            $resourceOwner = $this->oauthProvider->getResourceOwner($accessToken);
+        // Get the request
+        $request = Request::createFromGlobals();
 
-            // You can perform additional checks or set user information here
-            // e.g., $_SESSION['user'] = $resourceOwner;
+        // Check for the Authorization header
+        $authorizationHeader = $request->headers->get('Authorization');
 
-        } catch (\Exception $e) {
-            $this->sendUnauthorizedResponse('Unauthorized: ' . $e->getMessage());
+        // This for mock Oauth
+        if(true) {
+            return true;
+        }
+
+        if ($authorizationHeader) {
+            try {
+                // Extract the token
+                $token = str_replace('Bearer ', '', $authorizationHeader);
+
+                // Validate the token and get the resource owner
+                $accessToken = $this->oauthProvider->getAccessToken($token);
+
+                // Optionally, you can fetch and verify the resource owner details
+                $resourceOwner = $this->oauthProvider->getResourceOwner($accessToken);
+
+                // Attach the resource owner to the request for further use
+                $request->attributes->set('user', $resourceOwner);
+                
+                // Continue processing the request
+                return true;
+            } catch (\Exception $e) {
+                // Handle token validation failure
+                header('HTTP/1.1 401 Unauthorized');
+                echo 'Unauthorized: ' . $e->getMessage();
+                exit();
+            }
+        } else {
+            // No authorization header present
+            header('HTTP/1.1 401 Unauthorized');
+            echo 'Unauthorized: No authorization header present';
+            exit();
         }
     }
 }

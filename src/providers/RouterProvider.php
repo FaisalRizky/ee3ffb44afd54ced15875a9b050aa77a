@@ -4,15 +4,18 @@ namespace Providers;
 
 use AltoRouter;
 use Illuminate\Http\Request;
+use Providers\OAuthProvider; // Ensure this is included
 
 class RouterProvider extends BaseControllerProvider
 {
     private $router;
+    private $oauthProvider;
 
     public function __construct(array $config)
     {
         $this->router = new AltoRouter();
         $this->initializeRoutes();
+        $this->oauthProvider = new OAuthProvider($config); // Initialize OAuthProvider
     }
 
     private function initializeRoutes()
@@ -71,29 +74,33 @@ class RouterProvider extends BaseControllerProvider
             $controllerName = $controllerAction[0];
             $action = $controllerAction[1];
 
-            if (class_exists($controllerName)) {
-                $controller = new $controllerName();
-                if (is_callable([$controller, $action])) {
-                    // Resolve dependencies and call the action
-                    $reflection = new \ReflectionMethod($controller, $action);
-                    $params = [];
-
-                    foreach ($reflection->getParameters() as $param) {
-                        $type = $param->getType();
-                        if ($type && !$type->isBuiltin()) {
-                            $className = $type->getName();
-                            $params[] = $this->resolveClass($className);
-                        } else {
-                            $params[] = null; // Handle non-class parameters if necessary
-                        }
-                    }
-
-                    call_user_func_array([$controller, $action], $params);
-                } else {
-                    $this->send(null, 500, 'Action method is not callable: ' . $action);
-                }
+            if ($controllerName === 'OAuthController') {
+                $this->handleOAuth($action);
             } else {
-                $this->send(null, 500, 'Controller class does not exist: ' . $controllerName);
+                if (class_exists($controllerName)) {
+                    $controller = new $controllerName();
+                    if (is_callable([$controller, $action])) {
+                        // Resolve dependencies and call the action
+                        $reflection = new \ReflectionMethod($controller, $action);
+                        $params = [];
+
+                        foreach ($reflection->getParameters() as $param) {
+                            $type = $param->getType();
+                            if ($type && !$type->isBuiltin()) {
+                                $className = $type->getName();
+                                $params[] = $this->resolveClass($className);
+                            } else {
+                                $params[] = null; // Handle non-class parameters if necessary
+                            }
+                        }
+
+                        call_user_func_array([$controller, $action], $params);
+                    } else {
+                        $this->send(null, 500, 'Action method is not callable: ' . $action);
+                    }
+                } else {
+                    $this->send(null, 500, 'Controller class does not exist: ' . $controllerName);
+                }
             }
         } else {
             $this->send(null, 404, '404 Not Found');
@@ -119,5 +126,68 @@ class RouterProvider extends BaseControllerProvider
     {
         // Create and return a Request object
         return Request::createFromGlobals();
+    }
+
+    private function handleOAuth($action)
+    {
+        switch ($action) {
+            case 'authorize':
+                $this->handleOAuthAuthorization();
+                break;
+            
+            case 'token':
+                $this->handleOAuthToken();
+                break;
+
+            case 'userinfo':
+                $this->handleUserInfo();
+                break;
+
+            default:
+                $this->send(null, 404, 'OAuth action not found');
+                break;
+        }
+    }
+
+    private function handleOAuthAuthorization()
+    {
+        // Redirect to OAuth provider's authorization URL
+        header('Location: ' . $this->oauthProvider->getAuthorizationUrl());
+        exit();
+    }
+
+    private function handleOAuthToken()
+    {
+        // Handle OAuth token exchange
+        if (isset($_GET['code'])) {
+            $authorizationCode = $_GET['code'];
+            try {
+                $accessToken = $this->oauthProvider->getAccessToken($authorizationCode);
+                $_SESSION['access_token'] = $accessToken->getToken();
+                header('Location: /userinfo');
+            } catch (\Exception $e) {
+                $this->send(null, 500, 'Error: ' . $e->getMessage());
+            }
+        } else {
+            $this->send(null, 400, 'Authorization code is missing');
+        }
+    }
+
+    private function handleUserInfo()
+    {
+        // Handle user info request
+        if (isset($_SESSION['access_token'])) {
+            $accessToken = $_SESSION['access_token'];
+            try {
+                $user = $this->oauthProvider->getResourceOwner($accessToken);
+                echo '<pre>';
+                print_r($user);
+                echo '</pre>';
+            } catch (\Exception $e) {
+                $this->send(null, 500, 'Error: ' . $e->getMessage());
+            }
+        } else {
+            $this->send(null, 401, 'Access token is missing');
+        }
     }
 }
