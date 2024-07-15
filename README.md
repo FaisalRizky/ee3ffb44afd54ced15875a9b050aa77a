@@ -92,6 +92,10 @@ The following scripts are available for managing and running the application:
   ```sh
   composer start:consumer
 
+## Simulation
+
+https://github.com/user-attachments/assets/4053ac90-8573-4896-8acf-cd6213c77756
+
 ## To Do
 
 - [ ] Run classes as instances
