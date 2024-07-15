@@ -93,7 +93,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Email sent successfully."
+                      "example": "Email sending on process"
                     }
                   }
                 }

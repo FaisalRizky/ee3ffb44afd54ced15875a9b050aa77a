@@ -52,7 +52,7 @@
         "migrate": "php cmd/migrate.php",
         "migrate:rollback": "php cmd/rollback.php",
         "start": [
-            "php -S localhost:8000 start-server.php"
+            "php -S localhost:8000"
         ],
         "start:consumer": [
             "php consumer.php"

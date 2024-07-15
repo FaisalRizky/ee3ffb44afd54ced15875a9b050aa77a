@@ -46,7 +46,7 @@ class EmailService
             // Return the UUID as part of the response
             return [
                 'status' => 'success',
-                'message' => 'Email sent successfully',
+                'message' => 'Email sending on process',
                 'emailId' => $this->emailId
             ];
         } catch (\Exception $e) {

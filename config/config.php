@@ -67,7 +67,7 @@ class Config
      */
     private function env($key, $default = null)
     {
-        return getenv($key) ?: $default;
+        return $_ENV[$key] ?: $default;
     }
 
     /**
