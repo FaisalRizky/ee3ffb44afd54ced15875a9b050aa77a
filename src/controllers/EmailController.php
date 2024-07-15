@@ -3,12 +3,13 @@
 namespace Controllers;
 
 use Requests\EmailRequest;
+use Requests\EmailStatusRequest;
 use Providers\QueueProvider;
 use Services\EmailService;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Providers\BaseControllerProvider;
-use Illuminate\Http\Request; // Ensure this import
+use Illuminate\Http\Request;
 
 class EmailController extends BaseControllerProvider
 {
@@ -29,11 +30,11 @@ class EmailController extends BaseControllerProvider
         if (!$emailRequest->validate()) {
             // Using the send method from BaseControllerProvider
             $this->send(
-                null,
+                ['errors' => $emailRequest->getErrors()],
                 400,
-                'Validation failed',
-                ['errors' => $emailRequest->getErrors()]
+                'Validation failed'
             );
+            return;
         }
 
         try {
@@ -41,10 +42,10 @@ class EmailController extends BaseControllerProvider
             // Using the send method from BaseControllerProvider
             $this->send(
                 [
-                    'email_id' =>  $this->emailService->getEmailId()
+                    'email_id' => $this->emailService->getEmailId()
                 ],
                 200,
-                'Email sending on proccess',
+                'Email sending in process'
             );
         } catch (\Exception $e) {
             $this->logger->error('Failed to send email', ['exception' => $e->getMessage()]);
@@ -53,6 +54,39 @@ class EmailController extends BaseControllerProvider
                 null,
                 500,
                 'Failed to send email'
+            );
+        }
+    }
+
+    public function checkStatus(Request $request)
+    {
+        $emailStatusRequest = new EmailStatusRequest($request->all());
+
+        if (!$emailStatusRequest->validate()) {
+            // Using the send method from BaseControllerProvider
+            $this->send(
+                ['errors' => $emailStatusRequest->getErrors()],
+                400,
+                'Validation failed'
+            );
+            return;
+        }
+
+        try {
+            $statusData = $this->emailService->getEmailStatus($emailStatusRequest->getData()['email_id']);
+            // Using the send method from BaseControllerProvider
+            $this->send(
+                $statusData,
+                200,
+                'Email status retrieved successfully'
+            );
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to retrieve email status', ['exception' => $e->getMessage()]);
+            // Using the send method from BaseControllerProvider
+            $this->send(
+                null,
+                500,
+                'Failed to retrieve email status'
             );
         }
     }

@@ -25,6 +25,7 @@ $routeGroup->addRoute('GET', '/', [ApiDocsController::class, 'getApiDocs'], []);
 
 // Define email routes with OAuth middleware
 $routeGroup->addRoute('POST', '/emails/send', [EmailController::class, 'sendMail'], [$oauthMiddleware]);
+$routeGroup->addRoute('POST', '/emails/check-status', [EmailController::class, 'checkStatus'], [$oauthMiddleware]);
 
 // Define asset route without middleware
 $routeGroup->addRoute('GET', '/swagger', [ApiDocsController::class, 'swagger'], [$oauthMiddleware]);

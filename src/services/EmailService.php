@@ -60,6 +60,34 @@ class EmailService
         }
     }
 
+    public function getEmailStatus(string $emailId): array
+    {
+        try {
+            // Query email status using email_id
+            $email = Email::where('emailId', $emailId)->first();
+            
+            if ($email) {
+                return [
+                    'email_id' => $email->emailId,
+                    'status' => $email->status,
+                    'remarks' => $email->remarks
+                ];
+            } else {
+                return [
+                    'email_id' => $emailId,
+                    'status' => 'not found',
+                    'remarks' => 'email not found'
+                ];
+            }
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to retrieve email status: ' . $e->getMessage(), ['email_id' => $emailId]);
+            return [
+                'status' => 'error',
+                'message' => 'email not found'
+            ];
+        }
+    }
+
     private function saveEmailToDatabase(array $emailData)
     {
         try {
@@ -71,7 +99,9 @@ class EmailService
                 'sender' => $emailData['sender'],
                 'recipient' => $emailData['recipient'],
                 'subject' => $emailData['subject'],
-                'content' => $emailData['content']
+                'content' => $emailData['content'],
+                'status' => $emailData['status'] ?? 'pending', // Add status if provided
+                'remarks' => $emailData['remarks'] ?? '' // Add remarks if provided
                 ]
             );
             $this->logger->info('Email saved to database', $emailData);
