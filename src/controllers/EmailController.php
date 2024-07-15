@@ -44,7 +44,7 @@ class EmailController extends BaseControllerProvider
                     'email_id' =>  $this->emailService->getEmailId()
                 ],
                 200,
-                'Email sent successfully',
+                'Email sending on proccess',
             );
         } catch (\Exception $e) {
             $this->logger->error('Failed to send email', ['exception' => $e->getMessage()]);
