@@ -92,6 +92,16 @@ The following scripts are available for managing and running the application:
   ```sh
   composer start:consumer
 
+- **Code Sniffer:**
+
+  Start scan code on src:
+  ```sh
+  php cs
+
+  Start autofix code on src:
+  ```sh
+  php cbf
+
 ## Simulation
 
 https://github.com/user-attachments/assets/4053ac90-8573-4896-8acf-cd6213c77756
